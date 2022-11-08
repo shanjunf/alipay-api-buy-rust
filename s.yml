@@ -1,0 +1,52 @@
+edition: 1.0.0
+name: transform_fun
+access: default
+vars:
+  region: cn-beijing
+services:
+  wzapi-log:
+    component: devsapp/sls
+    props:
+      regionId: ${vars.region}
+      project: wzapi-log
+      description: used for wzapi
+      logstore:
+        - name: wzapi-log-stores
+          option:
+              ttl: 362
+              shardCount: 1
+  buy-service:
+    component: devsapp/fc
+    props:
+      region: ${vars.region}
+      service:
+        name: buy-service
+        description: buy api
+        internetAccess: true
+        vpcConfig:
+          vpcId: vpc-2ze70v776fq4ty7w0raew
+          vswitchIds:
+            - vsw-2zeamqp9wdv7rshch9ejg
+          securityGroupId: sg-2ze9nd6r1b7hjjt4kaf9
+        logConfig:
+          project: wzapi-log
+          logstore: wzapi-log-stores
+      function:
+        name: app-api
+        description: 'buy app api'
+        timeout: 30
+        memorySize: 256
+        runtime: custom
+        instanceConcurrency: 100
+        codeUri: ./target/pkg
+      triggers:
+        - name: http-Trigger
+          qualifier: product
+          type: http
+          config:
+            authType: anonymous
+            methods:
+              - GET
+              - POST
+              - PUT
+              - DELETE

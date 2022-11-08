@@ -1,0 +1,4 @@
+docker run --rm -it -v $(pwd):/opt/jdm fc-rust-env bash -c "cd /opt/jdm && /root/.cargo/bin/cargo build"
+mkdir -p target/pkg
+cp -f target/debug/jdm target/pkg/bootstrap
+s deploy --access default --use-local -t s.yml
